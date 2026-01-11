@@ -1,0 +1,91 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Helper function to get user data
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    // Helper function to check if user is a driver
+    function isDriver() {
+      return isSignedIn() && getUserData().role == 'driver';
+    }
+    
+    // Helper function to check if user is a student
+    function isStudent() {
+      return isSignedIn() && getUserData().role == 'student';
+    }
+
+    // Users collection rules
+    match /users/{userId} {
+      // Anyone can read user profiles (for displaying driver info to students)
+      allow read: if isSignedIn();
+      
+      // Users can only create their own profile during signup
+      allow create: if isSignedIn() && isOwner(userId);
+      
+      // Users can only update their own profile
+      allow update: if isSignedIn() && isOwner(userId);
+      
+      // Users cannot delete their profile (optional, can be changed)
+      allow delete: if false;
+    }
+
+    // Rides collection rules
+    match /rides/{rideId} {
+      // Students and drivers can read rides they're involved in
+      allow read: if isSignedIn() && (
+        resource.data.studentId == request.auth.uid ||
+        resource.data.driverId == request.auth.uid
+      );
+      
+      // Only students can create ride requests
+      allow create: if isStudent() && 
+        request.resource.data.studentId == request.auth.uid &&
+        request.resource.data.status == 'requested';
+      
+      // Drivers can update rides to accept/reject/complete
+      allow update: if isDriver() && 
+        resource.data.driverId == request.auth.uid;
+      
+      // Students can update rides to cancel or rate
+      allow update: if isStudent() && 
+        resource.data.studentId == request.auth.uid &&
+        (request.resource.data.status == 'cancelled' ||
+         request.resource.data.keys().hasAny(['rating', 'feedback']));
+      
+      // No one can delete rides
+      allow delete: if false;
+    }
+
+    // Notifications collection rules
+    match /notifications/{notificationId} {
+      // Users can only read their own notifications
+      allow read: if isSignedIn() && 
+        resource.data.userId == request.auth.uid;
+      
+      // System can create notifications (you'll need Cloud Functions for this)
+      allow create: if isSignedIn();
+      
+      // Users can update their own notifications (mark as read)
+      allow update: if isSignedIn() && 
+        resource.data.userId == request.auth.uid;
+      
+      // Users can delete their own notifications
+      allow delete: if isSignedIn() && 
+        resource.data.userId == request.auth.uid;
+    }
+  }
+}
