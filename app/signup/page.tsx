@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/contexts/AuthContext'
-import Navbar from '../components/Navbar'
 
 type UserRole = 'student' | 'driver' | null
 
@@ -81,9 +80,7 @@ export default function SignupPage() {
 
   if (!role) {
     return (
-      <>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 px-4 pt-16">
           <Card className="w-full max-w-2xl">
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-bold">Join RikHub</CardTitle>
@@ -132,14 +129,11 @@ export default function SignupPage() {
             </CardFooter>
           </Card>
         </div>
-      </>
     )
   }
 
   return (
-    <>
-      <Navbar />
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 px-4 py-8 pt-16">
         <Card className="w-full max-w-md">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -220,6 +214,5 @@ export default function SignupPage() {
           </CardFooter>
         </Card>
       </div>
-    </>
   )
 }
