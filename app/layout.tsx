@@ -1,22 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Roboto, Barlow } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "./components/Navbar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const roboto = Roboto({
+  variable: "--font-roboto",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const barlow = Barlow({
+  variable: "--font-barlow",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
   title: "RikRide - Your Campus Ride Simplified",
-  description: "Connect with trusted student drivers for safe, affordable rides around campus",
+  description: "Connect with trusted student drivers for safe, affordable rides around campus. Book rickshaw rides instantly.",
+  keywords: ["campus ride", "student transport", "rickshaw", "college ride sharing"],
 };
 
 export default function RootLayout({
@@ -26,12 +29,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${roboto.variable} ${barlow.variable} font-sans antialiased bg-background text-foreground`}>
         <AuthProvider>
           <Navbar />
-          {children}
+          <main className="min-h-screen">
+            {children}
+          </main>
         </AuthProvider>
       </body>
     </html>
