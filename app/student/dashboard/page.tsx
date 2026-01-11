@@ -11,7 +11,8 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import RideMapPicker from '@/app/components/RideMapPicker'
+import dynamic from 'next/dynamic'
+const RideMapPicker = dynamic(() => import('@/app/components/RideMapPicker'), { ssr: false })
 import {
   DropdownMenu,
   DropdownMenuContent,
